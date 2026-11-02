@@ -14,7 +14,7 @@
   --paper:#F2F5F8; --card:#FFFFFF; --line:#D5DDE6;
   --text:#10243A; --muted:#5B6E82;
   --lens:#3FD0C3; --lens-d:#0B7F77;
-  --c0:#E2483D; --c1:#2D6BE4; --c2:#F2A81D; --c3:#27A06B;
+  --ok:#2FBF86; --bad:#F0746B;
   font-family:'Bricolage Grotesque',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
 }
 *{box-sizing:border-box}
@@ -85,13 +85,14 @@ textarea.in{resize:vertical;min-height:64px}
 .opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
 .opt-row{display:flex;align-items:center;gap:8px}
 .opt-row .correct{display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.9rem;cursor:pointer}
-.dot{display:inline-grid;place-items:center;border-radius:50%;font-weight:800;color:#fff;flex:none;line-height:1;border:0;padding:0}
+.dot{display:inline-grid;place-items:center;border-radius:50%;font-weight:700;color:#fff;flex:none;line-height:1;background:transparent;border:2px solid rgba(255,255,255,.45);padding:0}
 .dot.sm{width:30px;height:30px;font-size:15px}
 .dot.md{width:42px;height:42px;font-size:20px}
 .dot.lg{width:clamp(38px,3.8vw,58px);height:clamp(38px,3.8vw,58px);font-size:clamp(20px,2vw,30px)}
 .dot.pl{width:64px;height:64px;font-size:30px}
 .dot.xl{width:min(28vw,96px);height:min(28vw,96px);font-size:2.2rem}
-.d0{background:var(--c0)} .d1{background:var(--c1)} .d2{background:var(--c2);color:var(--ink)} .d3{background:var(--c3)}
+.dot.on{border-color:var(--lens);color:var(--lens)}
+.opt-row .dot{background:#fff;color:var(--text);border-color:#9AA9B8}
 .qmeta{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end}
 .thumb{height:46px;border-radius:8px;border:1px solid var(--line)}
 .bottombar{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.96);backdrop-filter:blur(6px);border-top:1px solid var(--line);padding:12px max(18px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left))}
@@ -117,13 +118,15 @@ textarea.in{resize:vertical;min-height:64px}
 .ring .rf{fill:none;stroke:var(--lens);stroke-width:10;stroke-linecap:round}
 .ring .rn{position:absolute;inset:0;display:grid;place-items:center;font-weight:800;font-size:clamp(1.6rem,3.2vw,2.8rem)}
 .tiles{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:1400px;margin:0 auto}
-.tile{border-radius:16px;padding:clamp(14px,2.2vw,28px);display:flex;align-items:center;gap:16px;font-size:clamp(1.15rem,2.6vw,2.2rem);font-weight:700;min-height:clamp(84px,15vh,170px);position:relative;color:#fff;line-height:1.2}
-.tile .dot{background:#fff;color:var(--ink)}
-.tile .cnt{margin-left:auto;font-size:1.3em;font-weight:800;padding-left:12px}
-.t0{background:var(--c0)} .t1{background:var(--c1)} .t2{background:var(--c2);color:var(--ink)} .t3{background:var(--c3)}
-.tile.dim{opacity:.25}
-.tile.ok{outline:6px solid #fff;outline-offset:2px}
-.tile.ok::after{content:"✓";position:absolute;right:-10px;top:-14px;background:#fff;color:var(--ink);width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-size:1.5rem;font-weight:800}
+.tile{border-radius:16px;padding:clamp(14px,2.2vw,28px);display:flex;align-items:center;gap:16px;font-size:clamp(1.15rem,2.6vw,2.2rem);font-weight:600;min-height:clamp(84px,15vh,170px);position:relative;overflow:hidden;color:#fff;line-height:1.2;background:var(--ink2);border:1.5px solid var(--ink3)}
+.tile > *{position:relative;z-index:1}
+.tile > .fill{position:absolute;z-index:0;left:0;top:0;bottom:0;background:rgba(255,255,255,.10)}
+.tile .cnt{margin-left:auto;font-size:1.3em;font-weight:700;padding-left:12px;font-variant-numeric:tabular-nums}
+.tile.dim{opacity:.55}
+.tile.ok{background:#12453A;border-color:var(--ok);opacity:1}
+.tile.ok > .fill{background:rgba(47,191,134,.30)}
+.tile.ok .dot{border-color:var(--ok);color:var(--ok)}
+.okmark{background:var(--ok);color:#05281C;width:1.5em;height:1.5em;border-radius:50%;display:grid;place-items:center;font-size:.8em;font-weight:800;flex:none}
 .revgrid{display:grid;grid-template-columns:1.5fr 1fr;gap:28px;max-width:1500px;margin:0 auto;align-items:start}
 .revgrid .tiles{grid-template-columns:1fr 1fr;margin:0}
 .board{background:var(--ink2);border-radius:16px;padding:18px 20px}
@@ -159,14 +162,16 @@ textarea.in{resize:vertical;min-height:64px}
 .ptext-q{font-size:1.15rem;font-weight:600;margin-bottom:12px}
 .prows{display:grid;gap:10px}
 .prow{display:flex;align-items:center;gap:14px;width:100%;min-height:64px;padding:10px 14px;border-radius:14px;background:var(--ink2);border:1.5px solid var(--ink3);color:#fff;cursor:pointer;text-align:left;font-weight:600;font-size:1.05rem;line-height:1.25}
-.prow:active{background:var(--ink3)}
+.prow:active{background:var(--ink3);border-color:var(--lens)}
 .prow .ptxt{flex:1;word-break:break-word}
 .pdots{display:grid;grid-template-columns:1fr 1fr;gap:20px;justify-items:center;margin:26px 0}
 .pbtn{cursor:pointer}
-.pbtn:active{transform:scale(.94)}
+.pbtn:active{transform:scale(.94);border-color:var(--lens);color:var(--lens)}
 .hintq{text-align:center;color:#9FB4C9;margin-top:24px}
 .arow{margin-top:14px}
 .arow .lbl{font-size:.9rem;color:#9FB4C9;margin-bottom:6px}
+.ans.ok .dot{border-color:var(--ok);color:var(--ok)}
+.ans.bad .dot{border-color:var(--bad);color:var(--bad)}
 .ans{display:flex;align-items:center;gap:12px;background:var(--ink2);border-radius:14px;padding:10px 14px;font-weight:600;line-height:1.25}
 .result{border-radius:22px;padding:34px 20px;margin:24px 0 18px;text-align:center}
 .result.good{background:#1E7A52}
@@ -936,7 +941,7 @@ function hostQuestion() {
       r.wrap),
     h('h1', { class: 'qtext' }, q.text),
     q.img ? h('img', { class: 'qimg', src: q.img, alt: '' }) : null,
-    h('div', { class: 'tiles' }, [0, 1, 2, 3].map(k => h('div', { class: 'tile t' + k }, dot(k, 'lg'), h('span', {}, q.opts[k])))),
+    h('div', { class: 'tiles' }, [0, 1, 2, 3].map(k => h('div', { class: 'tile' }, dot(k, 'lg'), h('span', {}, q.opts[k])))),
     h('div', { id: 'statusRow', class: 'statusrow' }),
     h('div', { class: 'actions' },
       h('button', { class: 'btn ghost', onClick: () => reveal(false) }, 'Soruyu şimdi bitir'),
@@ -1018,6 +1023,7 @@ function hostReveal() {
   }
   const counts = [0, 0, 0, 0];
   Object.values(H.answers['q' + i] || {}).forEach(a => { if (a.c >= 0 && a.c <= 3) counts[a.c]++; });
+  const totalAns = counts.reduce((a, b) => a + b, 0);
   const sorted = sortBoard(H.board);
   const last = i >= H.questions.length - 1;
   const goNext = () => {
@@ -1039,7 +1045,11 @@ function hostReveal() {
     h('div', { class: 'topline' }, h('span', { class: 'pill' }, `Soru ${i + 1} / ${H.questions.length}`), h('span', { class: 'pill' }, `${Object.keys(H.answers['q' + i] || {}).length} cevap`)),
     h('h1', { class: 'qtext', style: 'font-size:clamp(1.4rem,3vw,2.4rem)' }, q.text),
     h('div', { class: 'revgrid' },
-      h('div', { class: 'tiles' }, [0, 1, 2, 3].map(k => h('div', { class: 'tile t' + k + (k === q.correct ? ' ok' : ' dim') }, dot(k, 'lg'), h('span', {}, q.opts[k]), h('span', { class: 'cnt' }, String(counts[k]))))),
+      h('div', { class: 'tiles' }, [0, 1, 2, 3].map(k => h('div', { class: 'tile' + (k === q.correct ? ' ok' : ' dim') },
+        h('span', { class: 'fill', style: `width:${totalAns ? Math.round(counts[k] / totalAns * 100) : 0}%` }),
+        dot(k, 'lg'), h('span', {}, q.opts[k]),
+        k === q.correct ? h('span', { class: 'okmark', 'aria-label': 'Doğru' }, '✓') : null,
+        h('span', { class: 'cnt' }, String(counts[k]))))),
       h('div', {}, h('div', { class: 'board' }, h('h2', {}, 'İlk 5'), boardRows(sorted, 5, true)), nonAnsNode)),
     h('div', { class: 'actions' }, auto ? [lbl, pauseBtnFor(lbl, text)] : null, nextBtn, soundBtn())));
   if (counts[q.correct] > 0) SND.chime();
@@ -1273,7 +1283,7 @@ function pQuestion(ans, exp, fail) {
   const cur = P.cur;
   if (!cur || cur.n !== P.state.index + 1) { pWait('Soru geliyor…', ''); return; }
   if (ans) {
-    const big = dot(P.choice, 'pl');
+    const big = dot(P.choice, 'pl on');
     if (fail) pWait('Cevabın alınamadı', 'Süre dolmuş olabilir. Sıradaki soruya hazır ol.', big);
     else pWait('Cevabın alındı', 'Diğer katılımcılar bekleniyor…', big);
     return;
@@ -1319,9 +1329,9 @@ function pReveal() {
   else if (me.ok) box = h('div', { class: 'result good' }, h('h2', {}, 'Doğru!'), h('p', {}, `+${me.l} puan`));
   else box = h('div', { class: 'result bad' }, h('h2', {}, 'Yanlış'), h('p', {}, '0 puan'));
   const opts = P.meta.phoneText && cur.opts ? cur.opts : null;
-  const arow = (label, k) => h('div', { class: 'arow' }, h('div', { class: 'lbl' }, label),
-    h('div', { class: 'ans' }, dot(k, 'md'), h('span', {}, opts ? opts[k] : 'Şık ' + LETTERS[k])));
-  const extra = me.a === -1 ? [arow('Doğru cevap', cur.correct)] : me.ok ? [] : [arow('Senin cevabın', me.a), arow('Doğru cevap', cur.correct)];
+  const arow = (label, k, kind) => h('div', { class: 'arow' }, h('div', { class: 'lbl' }, label),
+    h('div', { class: 'ans ' + kind }, dot(k, 'md'), h('span', {}, opts ? opts[k] : 'Şık ' + LETTERS[k])));
+  const extra = me.a === -1 ? [arow('Doğru cevap', cur.correct, 'ok')] : me.ok ? [] : [arow('Senin cevabın', me.a, 'bad'), arow('Doğru cevap', cur.correct, 'ok')];
   mount(h('div', { class: 'screen' }, h('div', { class: 'pwrap' }, box, extra,
     h('div', { class: 'stats' }, h('div', { class: 'stat' }, h('b', {}, `${rank}.`), 'Sıran'), h('div', { class: 'stat' }, h('b', {}, String(me.s)), 'Toplam puan')),
     h('p', { class: 'muted center', style: 'min-height:auto;margin-top:22px' }, 'Sıradaki soru bekleniyor…'))));

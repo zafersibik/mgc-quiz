@@ -85,9 +85,13 @@ textarea.in{resize:vertical;min-height:64px}
 .opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
 .opt-row{display:flex;align-items:center;gap:8px}
 .opt-row .correct{display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:.9rem;cursor:pointer}
-.badge{width:34px;height:34px;border-radius:8px;display:grid;place-items:center;flex:none;color:#fff}
-.badge svg{width:18px;height:18px;fill:currentColor}
-.badge.c0{background:var(--c0)} .badge.c1{background:var(--c1)} .badge.c2{background:var(--c2);color:var(--ink)} .badge.c3{background:var(--c3)}
+.dot{display:inline-grid;place-items:center;border-radius:50%;font-weight:800;color:#fff;flex:none;line-height:1;border:0;padding:0}
+.dot.sm{width:30px;height:30px;font-size:15px}
+.dot.md{width:42px;height:42px;font-size:20px}
+.dot.lg{width:clamp(38px,3.8vw,58px);height:clamp(38px,3.8vw,58px);font-size:clamp(20px,2vw,30px)}
+.dot.pl{width:64px;height:64px;font-size:30px}
+.dot.xl{width:min(28vw,96px);height:min(28vw,96px);font-size:2.2rem}
+.d0{background:var(--c0)} .d1{background:var(--c1)} .d2{background:var(--c2);color:var(--ink)} .d3{background:var(--c3)}
 .qmeta{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end}
 .thumb{height:46px;border-radius:8px;border:1px solid var(--line)}
 .bottombar{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.96);backdrop-filter:blur(6px);border-top:1px solid var(--line);padding:12px max(18px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left))}
@@ -114,8 +118,7 @@ textarea.in{resize:vertical;min-height:64px}
 .ring .rn{position:absolute;inset:0;display:grid;place-items:center;font-weight:800;font-size:clamp(1.6rem,3.2vw,2.8rem)}
 .tiles{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:1400px;margin:0 auto}
 .tile{border-radius:16px;padding:clamp(14px,2.2vw,28px);display:flex;align-items:center;gap:16px;font-size:clamp(1.15rem,2.6vw,2.2rem);font-weight:700;min-height:clamp(84px,15vh,170px);position:relative;color:#fff;line-height:1.2}
-.tile .shape{width:clamp(30px,3.6vw,52px);height:clamp(30px,3.6vw,52px);flex:none}
-.tile .shape svg{width:100%;height:100%;fill:currentColor}
+.tile .dot{background:#fff;color:var(--ink)}
 .tile .cnt{margin-left:auto;font-size:1.3em;font-weight:800;padding-left:12px}
 .t0{background:var(--c0)} .t1{background:var(--c1)} .t2{background:var(--c2);color:var(--ink)} .t3{background:var(--c3)}
 .tile.dim{opacity:.25}
@@ -154,16 +157,17 @@ textarea.in{resize:vertical;min-height:64px}
 .ptop .ring{width:64px;height:64px}
 .ptop .ring .rn{font-size:1.5rem}
 .ptext-q{font-size:1.15rem;font-weight:600;margin-bottom:12px}
-.ptiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;height:calc(100dvh - 150px);min-height:340px}
-.ptile{border:0;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#fff;cursor:pointer;padding:10px}
-.ptile:active{transform:scale(.97)}
-.ptile .pshape{width:min(26vw,96px);height:min(26vw,96px)}
-.ptile .pshape svg{width:100%;height:100%;fill:currentColor}
-.ptile .ptext{font-size:1rem;font-weight:700;line-height:1.2;text-align:center;word-break:break-word}
-.ptile.t2{color:var(--ink)}
-.bigshape{width:120px;height:120px;border-radius:26px;display:grid;place-items:center;color:#fff;margin:0 auto}
-.bigshape svg{width:64px;height:64px;fill:currentColor}
-.bigshape.t2{color:var(--ink)}
+.prows{display:grid;gap:10px}
+.prow{display:flex;align-items:center;gap:14px;width:100%;min-height:64px;padding:10px 14px;border-radius:14px;background:var(--ink2);border:1.5px solid var(--ink3);color:#fff;cursor:pointer;text-align:left;font-weight:600;font-size:1.05rem;line-height:1.25}
+.prow:active{background:var(--ink3)}
+.prow .ptxt{flex:1;word-break:break-word}
+.pdots{display:grid;grid-template-columns:1fr 1fr;gap:20px;justify-items:center;margin:26px 0}
+.pbtn{cursor:pointer}
+.pbtn:active{transform:scale(.94)}
+.hintq{text-align:center;color:#9FB4C9;margin-top:24px}
+.arow{margin-top:14px}
+.arow .lbl{font-size:.9rem;color:#9FB4C9;margin-bottom:6px}
+.ans{display:flex;align-items:center;gap:12px;background:var(--ink2);border-radius:14px;padding:10px 14px;font-weight:600;line-height:1.25}
 .result{border-radius:22px;padding:34px 20px;margin:24px 0 18px;text-align:center}
 .result.good{background:#1E7A52}
 .result.bad{background:#A8342C}
@@ -173,6 +177,17 @@ textarea.in{resize:vertical;min-height:64px}
 .stats{display:flex;gap:12px;justify-content:center}
 .stat{background:var(--ink2);border-radius:14px;padding:14px 20px;text-align:center;min-width:130px}
 .stat b{display:block;font-size:1.8rem}
+
+/* cevap durumu, kayıtlı sınavlar */
+.statusrow{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:1400px;margin:16px auto 0}
+.nchip{background:var(--ink2);color:#9FB4C9;border:1px solid var(--ink3);border-radius:999px;padding:.2em .85em;font-size:.95rem;font-weight:600}
+.nchip.done{background:var(--lens);color:var(--ink);border-color:var(--lens)}
+.nonans{background:var(--ink2);border-radius:16px;padding:14px 20px;margin-top:14px}
+.nonans h3{font-size:1.05rem;margin-bottom:6px}
+.nonans p{color:#C7D6E5;line-height:1.4}
+.libitem{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.libname{display:grid;gap:2px}
+.modal h3{font-size:1.05rem}
 
 /* hazırlık, değerlendirme, podyum açılışı */
 .prepnum{font-size:clamp(7rem,26vw,20rem);font-weight:800;line-height:1;color:var(--lens);font-variant-numeric:tabular-nums}
@@ -309,12 +324,6 @@ const PIN_PARAM = (qs.get('kod') || '').replace(/\D/g, '').slice(0, 6);
 let UID = null, OFFSET = 0, TICK = null, UNS = [];
 const srvNow = () => Date.now() + OFFSET;
 
-const SHAPES = [
-  '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z"/></svg>',
-  '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 22 12 12 22 2 12z"/></svg>',
-  '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/></svg>',
-  '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>'
-];
 const BRAND_SVG = '<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="13" fill="none" stroke="#3FD0C3" stroke-width="3"/><circle cx="16" cy="16" r="7" fill="none" stroke="#3FD0C3" stroke-width="3" opacity=".6"/><circle cx="16" cy="16" r="2.5" fill="#3FD0C3"/></svg>';
 
 function h(tag, attrs, ...kids) {
@@ -336,6 +345,7 @@ function h(tag, attrs, ...kids) {
   return el;
 }
 const mount = (el) => app$.replaceChildren(el);
+const dot = (k, size) => h('span', { class: 'dot d' + k + (size ? ' ' + size : ''), 'aria-hidden': 'true' }, LETTERS[k]);
 const $id = (id) => document.getElementById(id);
 function toast(msg) {
   const t = h('div', { class: 'toast', role: 'status' }, msg);
@@ -442,7 +452,7 @@ async function boot() {
    YÖNETİCİ
    ===================================================================== */
 const DKEY = 'mgcQuizDraft_v1';
-let D = { meta: { title: '', defTime: 20, defPoints: 1000, bonus: true, phoneText: true, prep: 3, autoNext: false, autoSec: 10, finalAuto: false, finalSec: 10, sound: true, volume: 0.6 }, qs: [] };
+let D = { meta: { title: '', defTime: 20, defPoints: 1000, bonus: true, phoneText: true, showWho: true, prep: 3, autoNext: false, autoSec: 10, finalAuto: false, finalSec: 10, sound: true, volume: 0.6 }, qs: [] };
 try { const x = JSON.parse(localStorage.getItem(DKEY) || 'null'); if (x && Array.isArray(x.qs)) D = { meta: { ...D.meta, ...(x.meta || {}) }, qs: x.qs }; } catch (e) {}
 let saveT = null;
 function save() {
@@ -497,7 +507,8 @@ function renderEditor(keepScroll = true) {
       h('div', { class: 'field' }, h('label', { class: 'lbl', for: 'm-title' }, 'Etkinlik adı (ekranda görünür)'),
         h('input', { id: 'm-title', class: 'in', type: 'text', maxlength: 80, placeholder: 'Örn. Ürün bilgisi yarışması', value: D.meta.title, onInput: (e) => { D.meta.title = e.target.value; save(); } })),
       h('div', { class: 'checks' },
-        h('label', {}, h('input', { type: 'checkbox', checked: D.meta.phoneText, onChange: (e) => { D.meta.phoneText = e.target.checked; save(); } }), 'Soru ve şık metinleri telefonlarda da görünsün'))),
+        h('label', {}, h('input', { type: 'checkbox', checked: D.meta.phoneText, onChange: (e) => { D.meta.phoneText = e.target.checked; save(); } }), 'Soru ve şık metinleri telefonlarda da görünsün'),
+        h('label', {}, h('input', { type: 'checkbox', checked: D.meta.showWho !== false, onChange: (e) => { D.meta.showWho = e.target.checked; save(); } }), 'Cevap verenleri ve vermeyenleri ekranda göster'))),
     h('div', { class: 'card group' }, h('h3', {}, 'Süre ve puan'),
       h('div', { class: 'grid2' },
         h('div', { class: 'field' }, h('label', { class: 'lbl', for: 'm-time' }, 'Varsayılan süre (sn)'),
@@ -527,6 +538,8 @@ function renderEditor(keepScroll = true) {
     h('button', { class: 'btn ghost', onClick: downloadTemplate }, 'Excel şablonunu indir'),
     h('button', { class: 'btn ghost', onClick: () => fileInp.click() }, 'Excel\'den yükle'),
     h('button', { class: 'btn ghost', onClick: openPasteModal }, 'Metinden ekle'),
+    h('button', { class: 'btn ghost', onClick: exportQuestions }, 'Soruları Excel\'e aktar'),
+    h('button', { class: 'btn ghost', onClick: openLibModal }, 'Kayıtlı sınavlar'),
     h('button', { class: 'btn ghost', onClick: () => { if (confirm('Tüm sorular silinsin mi?')) { D.qs = [newQ()]; save(); renderEditor(false); } } }, 'Tümünü sil'),
     fileInp);
 
@@ -565,7 +578,7 @@ function updateBar() {
 function qCard(q, i) {
   const move = (d) => { const j = i + d; if (j < 0 || j >= D.qs.length) return; [D.qs[i], D.qs[j]] = [D.qs[j], D.qs[i]]; save(); renderEditor(); };
   const optRow = (k) => h('div', { class: 'opt-row' },
-    h('span', { class: 'badge c' + k, html: SHAPES[k] }),
+    dot(k, 'sm'),
     h('input', { class: 'in', type: 'text', maxlength: 120, placeholder: `${LETTERS[k]} şıkkı`, 'aria-label': `${LETTERS[k]} şıkkı`, value: q.opts[k], onInput: (e) => { q.opts[k] = e.target.value; save(); updateBar(); } }),
     h('label', { class: 'correct' }, h('input', { type: 'radio', name: 'c' + q.id, checked: q.correct === k, onChange: () => { q.correct = k; save(); updateBar(); } }), 'Doğru'));
   const imgInp = h('input', { type: 'file', accept: 'image/*', style: 'display:none', onChange: async (e) => { const f = e.target.files[0]; e.target.value = ''; if (!f) return; try { q.img = await shrinkImage(f); save(); renderEditor(); } catch (err) { toast('Resim okunamadı.'); } } });
@@ -670,6 +683,71 @@ function openPasteModal() {
   });
 }
 
+function dateStr() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
+
+function exportQuestions() {
+  if (!window.XLSX) { toast('Excel kitaplığı yüklenemedi. İnternet bağlantısını kontrol et.'); return; }
+  const qs = D.qs.filter(q => !isBlank(q));
+  if (!qs.length) { toast('Aktarılacak soru yok.'); return; }
+  const rows = [['Soru', 'A şıkkı', 'B şıkkı', 'C şıkkı', 'D şıkkı', 'Doğru şık (A/B/C/D)', 'Süre (sn)', 'Puan']];
+  qs.forEach(q => rows.push([q.text, q.opts[0], q.opts[1], q.opts[2], q.opts[3], q.correct == null ? '' : LETTERS[q.correct], q.time == null ? '' : q.time, q.points == null ? '' : q.points]));
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = [{ wch: 60 }, { wch: 24 }, { wch: 24 }, { wch: 24 }, { wch: 24 }, { wch: 22 }, { wch: 12 }, { wch: 10 }];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Sorular');
+  XLSX.writeFile(wb, `MGC_Quiz_Sorular_${dateStr()}.xlsx`);
+  toast(qs.some(q => q.img) ? 'Sorular indirildi. Resimler Excel\'e aktarılmaz, yeniden eklemen gerekir.' : 'Sorular Excel olarak indirildi.');
+}
+
+const LKEY = 'mgcQuizLib_v1';
+function libLoad() { try { const x = JSON.parse(localStorage.getItem(LKEY) || '[]'); return Array.isArray(x) ? x : []; } catch (e) { return []; } }
+function libSave(list) {
+  try { localStorage.setItem(LKEY, JSON.stringify(list)); return true; }
+  catch (e) { toast('Kaydedilemedi. Tarayıcı saklama alanı dolmuş olabilir, resimli soruları azaltmayı dene.'); return false; }
+}
+function cloneQs(qs) { return JSON.parse(JSON.stringify(qs)).map(q => ({ ...q, id: newId() })); }
+
+function openLibModal() {
+  let closeFn = () => {};
+  const fmt = (t) => { const d = new Date(t); return `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`; };
+  const nameIn = h('input', { class: 'in', type: 'text', maxlength: 60, placeholder: 'Sınav adı (örn. Mart bayi toplantısı)', value: D.meta.title });
+  const listBox = h('div', { style: 'display:grid;gap:8px' });
+  function loadSet(item) {
+    if (D.qs.some(q => !isBlank(q)) && !confirm(`Şu anki sorular silinip "${item.name}" yüklenecek. Devam edilsin mi? İstersen önce şu anki soruları kaydet.`)) return;
+    D.qs = cloneQs(item.qs);
+    if (item.title) D.meta.title = item.title;
+    save(); closeFn(); renderEditor(false); toast(`"${item.name}" yüklendi (${item.qs.length} soru).`);
+  }
+  function refresh() {
+    const list = libLoad();
+    listBox.replaceChildren(...(list.length ? list.map(item => h('div', { class: 'libitem' },
+      h('div', { class: 'libname' }, h('b', {}, item.name), h('span', { class: 'muted' }, `${item.qs.length} soru · ${fmt(item.savedAt)}`)),
+      h('div', { class: 'row' },
+        h('button', { class: 'btn ghost', onClick: () => loadSet(item) }, 'Yükle'),
+        h('button', { class: 'btn ghost', onClick: () => { const l = libLoad(); l.unshift({ ...item, id: newId(), name: item.name + ' (kopya)', savedAt: Date.now() }); if (libSave(l)) refresh(); } }, 'Kopyala'),
+        h('button', { class: 'btn ghost', onClick: () => { if (!confirm(`"${item.name}" silinsin mi?`)) return; if (libSave(libLoad().filter(x => x.id !== item.id))) refresh(); } }, 'Sil'))))
+      : [h('p', { class: 'muted' }, 'Henüz kayıtlı sınav yok.')]));
+  }
+  function saveCurrent() {
+    const name = nameIn.value.trim();
+    const qs = D.qs.filter(q => !isBlank(q));
+    if (!name) { toast('Önce bir ad yaz.'); return; }
+    if (!qs.length) { toast('Kaydedilecek soru yok.'); return; }
+    const list = libLoad();
+    const ex = list.findIndex(x => x.name.toLowerCase() === name.toLowerCase());
+    if (ex >= 0) { if (!confirm(`"${name}" adlı bir kayıt var. Üzerine yazılsın mı?`)) return; list.splice(ex, 1); }
+    list.unshift({ id: newId(), name, title: D.meta.title, savedAt: Date.now(), qs: cloneQs(qs) });
+    if (libSave(list)) { refresh(); toast('Kaydedildi.'); }
+  }
+  const body = h('div', { style: 'display:grid;gap:16px' },
+    h('div', { style: 'display:grid;gap:8px' }, h('h3', {}, 'Şu anki soruları kaydet'),
+      h('div', { class: 'row' }, h('div', { style: 'flex:1;min-width:200px' }, nameIn), h('button', { class: 'btn primary', onClick: saveCurrent }, 'Kaydet'))),
+    h('div', { style: 'display:grid;gap:8px' }, h('h3', {}, 'Kayıtlı sınavlar'), listBox),
+    h('p', { class: 'muted' }, 'Kayıtlar yalnızca bu tarayıcıda saklanır. Başka bilgisayara taşımak ya da yedeklemek için "Soruları Excel\'e aktar"ı kullan.'));
+  refresh();
+  closeFn = openModal({ title: 'Kayıtlı sınavlar', body, actions: [{ label: 'Kapat', cls: 'primary' }] });
+}
+
 async function startGame() {
   const p = problems();
   if (p.length) {
@@ -685,7 +763,7 @@ async function startGame() {
       time: q.time || D.meta.defTime, points: q.points == null ? D.meta.defPoints : q.points, img: q.img || null
     };
   });
-  const meta = { title: D.meta.title.trim() || 'MGC Quiz', total: D.qs.length, bonus: !!D.meta.bonus, phoneText: !!D.meta.phoneText, prep: D.meta.prep || 0, autoNext: !!D.meta.autoNext, autoSec: D.meta.autoSec || 10, finalAuto: !!D.meta.finalAuto, finalSec: D.meta.finalSec || 10, createdAt: serverTimestamp() };
+  const meta = { title: D.meta.title.trim() || 'MGC Quiz', total: D.qs.length, bonus: !!D.meta.bonus, phoneText: !!D.meta.phoneText, showWho: D.meta.showWho !== false, prep: D.meta.prep || 0, autoNext: !!D.meta.autoNext, autoSec: D.meta.autoSec || 10, finalAuto: !!D.meta.finalAuto, finalSec: D.meta.finalSec || 10, createdAt: serverTimestamp() };
   let pin = null, lastErr = null;
   for (let t = 0; t < 6 && !pin; t++) {
     const c = String(Math.floor(100000 + Math.random() * 900000));
@@ -785,6 +863,14 @@ function onPlayersChange() {
 function updateCounter() {
   const el = $id('ansCount'); if (!el || !H.state) return;
   el.textContent = `${answeredCount(H.state.index)} / ${Object.keys(H.players).length} cevap`;
+  updateStatus();
+}
+function updateStatus() {
+  const box = $id('statusRow'); if (!box || !H.state) return;
+  const list = playerList();
+  if (H.meta.showWho === false || list.length > 60) { box.replaceChildren(); return; }
+  const ans = H.answers['q' + H.state.index] || {};
+  box.replaceChildren(...list.map(p => h('span', { class: 'nchip' + (ans[p.uid] ? ' done' : '') }, ans[p.uid] ? '✓ ' + p.name : p.name)));
 }
 function onAnswersChange() {
   if (!H || !H.state || H.state.status !== 'question') return;
@@ -850,7 +936,8 @@ function hostQuestion() {
       r.wrap),
     h('h1', { class: 'qtext' }, q.text),
     q.img ? h('img', { class: 'qimg', src: q.img, alt: '' }) : null,
-    h('div', { class: 'tiles' }, [0, 1, 2, 3].map(k => h('div', { class: 'tile t' + k }, h('span', { class: 'shape', html: SHAPES[k] }), h('span', {}, q.opts[k])))),
+    h('div', { class: 'tiles' }, [0, 1, 2, 3].map(k => h('div', { class: 'tile t' + k }, dot(k, 'lg'), h('span', {}, q.opts[k])))),
+    h('div', { id: 'statusRow', class: 'statusrow' }),
     h('div', { class: 'actions' },
       h('button', { class: 'btn ghost', onClick: () => reveal(false) }, 'Soruyu şimdi bitir'),
       soundBtn())));
@@ -942,13 +1029,18 @@ function hostReveal() {
   const lbl = h('span', { class: 'autolbl' });
   H.autoLeft = (H.meta.autoSec || 10) * 1000;
   const text = () => H.paused ? 'Duraklatıldı' : `${last ? 'Sonuçlar' : 'Sonraki soru'} ${Math.ceil(H.autoLeft / 1000)} sn sonra`;
+  const ansMap = H.answers['q' + i] || {};
+  const missing = playerList().filter(p => !ansMap[p.uid]);
+  const nonAnsNode = (H.meta.showWho !== false && missing.length) ? h('div', { class: 'nonans' },
+    h('h3', {}, `Cevap vermeyenler (${missing.length})`),
+    h('p', {}, missing.slice(0, 8).map(p => p.name).join(', ') + (missing.length > 8 ? ` ve ${missing.length - 8} kişi daha` : ''))) : null;
   const nextBtn = h('button', { class: 'btn primary big', onClick: goNext }, last ? 'Sonuçları göster' : 'Sonraki soru');
   mount(h('div', { class: 'screen' },
     h('div', { class: 'topline' }, h('span', { class: 'pill' }, `Soru ${i + 1} / ${H.questions.length}`), h('span', { class: 'pill' }, `${Object.keys(H.answers['q' + i] || {}).length} cevap`)),
     h('h1', { class: 'qtext', style: 'font-size:clamp(1.4rem,3vw,2.4rem)' }, q.text),
     h('div', { class: 'revgrid' },
-      h('div', { class: 'tiles' }, [0, 1, 2, 3].map(k => h('div', { class: 'tile t' + k + (k === q.correct ? ' ok' : ' dim') }, h('span', { class: 'shape', html: SHAPES[k] }), h('span', {}, q.opts[k]), h('span', { class: 'cnt' }, String(counts[k]))))),
-      h('div', { class: 'board' }, h('h2', {}, 'İlk 5'), boardRows(sorted, 5, true))),
+      h('div', { class: 'tiles' }, [0, 1, 2, 3].map(k => h('div', { class: 'tile t' + k + (k === q.correct ? ' ok' : ' dim') }, dot(k, 'lg'), h('span', {}, q.opts[k]), h('span', { class: 'cnt' }, String(counts[k]))))),
+      h('div', {}, h('div', { class: 'board' }, h('h2', {}, 'İlk 5'), boardRows(sorted, 5, true)), nonAnsNode)),
     h('div', { class: 'actions' }, auto ? [lbl, pauseBtnFor(lbl, text)] : null, nextBtn, soundBtn())));
   if (counts[q.correct] > 0) SND.chime();
   if (auto) {
@@ -998,7 +1090,8 @@ function hostFinal() {
   const after = h('div', { class: 'hid' },
     h('div', { class: 'fulllist' }, boardRows(sorted, 500, false)),
     h('div', { class: 'actions' },
-      h('button', { class: 'btn primary', onClick: exportResults }, 'Sonuçları Excel olarak indir'),
+      h('button', { class: 'btn primary', onClick: restartGame }, 'Aynı sorularla yeniden başlat'),
+      h('button', { class: 'btn ghost', onClick: exportResults }, 'Sonuçları Excel olarak indir'),
       h('button', { class: 'btn ghost', onClick: async () => { if (!confirm('Oyun ve tüm cevaplar silinsin mi? Sonuçları indirdiğinden emin ol.')) return; const pin = H.pin; try { await remove(ref(db, `games/${pin}`)); } catch (e) {} leaveGame(); } }, 'Oyunu sil ve çık'),
       h('button', { class: 'btn ghost', onClick: leaveGame }, 'Yeni oyun hazırla'),
       soundBtn()));
@@ -1015,6 +1108,18 @@ function hostFinal() {
     t += idx < steps.length - 1 ? 2200 : 2000;
   });
   later(donePodium, t);
+}
+
+async function restartGame() {
+  if (!confirm('Puanlar ve cevaplar silinecek. Sonuçları Excel olarak indirdin mi? Devam edilsin mi?')) return;
+  try {
+    const round = ((H.state && H.state.round) || 0) + 1;
+    H.paused = false; H.board = null;
+    await update(ref(db, `games/${H.pin}`), {
+      answers: null, board: null, qlog: null, current: null,
+      state: { status: 'lobby', index: -1, qkey: '', startedAt: 0, revealed: -1, podium: false, round }
+    });
+  } catch (e) { toast('Yeniden başlatılamadı: ' + (e.message || e.code)); }
 }
 
 function leaveGame() {
@@ -1116,7 +1221,7 @@ async function attachPlayer(pin, name) {
     const s0 = (await get(ref(db, `games/${pin}/state`))).val();
     if (s0 && s0.status === 'question') {
       const a = await get(ref(db, `games/${pin}/answers/${s0.qkey}/${UID}`));
-      if (a.exists()) { P.answered = s0.qkey; P.choice = a.val().c; }
+      if (a.exists()) { P.answered = qidOf(s0); P.choice = a.val().c; }
     }
   } catch (e) {}
   const p = (path, fn) => UNS.push(onValue(ref(db, `games/${pin}/${path}`), fn));
@@ -1127,12 +1232,14 @@ async function attachPlayer(pin, name) {
   p('players/' + UID, s => { if (!s.exists() && P.state) { localStorage.removeItem('mgcPlayer'); detachAll(); renderJoin('Oyundan çıkarıldın. İstersen tekrar katılabilirsin.'); } });
 }
 
+const qidOf = (st) => (st.round || 0) + ':' + st.qkey;
+
 function renderPlayer() {
   if (!P) return;
   const st = P.state, meta = P.meta;
   if (!st || !meta) return;
-  const ans = P.answered === st.qkey, exp = P.expired === st.qkey, fail = P.failed === st.qkey;
-  const key = [st.status, st.index, st.revealed, st.podium, ans, exp, fail, P.board ? 1 : 0, P.cur ? (P.cur.correct == null ? 'n' : P.cur.correct) : 'x', P.cur ? P.cur.n : 0].join('|');
+  const qid = qidOf(st), ans = P.answered === qid, exp = P.expired === qid, fail = P.failed === qid;
+  const key = [st.round, st.status, st.index, st.revealed, st.podium, ans, exp, fail, P.board ? 1 : 0, P.cur ? (P.cur.correct == null ? 'n' : P.cur.correct) : 'x', P.cur ? P.cur.n : 0].join('|');
   if (key === P.key) return;
   P.key = key;
   clearInterval(TICK);
@@ -1166,7 +1273,7 @@ function pQuestion(ans, exp, fail) {
   const cur = P.cur;
   if (!cur || cur.n !== P.state.index + 1) { pWait('Soru geliyor…', ''); return; }
   if (ans) {
-    const big = h('div', { class: 'bigshape t' + P.choice, html: SHAPES[P.choice] });
+    const big = dot(P.choice, 'pl');
     if (fail) pWait('Cevabın alınamadı', 'Süre dolmuş olabilir. Sıradaki soruya hazır ol.', big);
     else pWait('Cevabın alındı', 'Diğer katılımcılar bekleniyor…', big);
     return;
@@ -1174,27 +1281,30 @@ function pQuestion(ans, exp, fail) {
   if (exp) { pWait('Süre doldu', 'Sonuç birazdan ekranda.'); return; }
   const r = ringNode(cur.time);
   const showText = P.meta.phoneText && cur.opts;
+  const choices = showText
+    ? h('div', { class: 'prows' }, [0, 1, 2, 3].map(k => h('button', { class: 'prow', 'aria-label': 'Şık ' + LETTERS[k], onClick: () => answer(k) }, dot(k, 'md'), h('span', { class: 'ptxt' }, cur.opts[k]))))
+    : h('div', { class: 'pdots' }, [0, 1, 2, 3].map(k => h('button', { class: 'dot d' + k + ' xl pbtn', 'aria-label': 'Şık ' + LETTERS[k], onClick: () => answer(k) }, LETTERS[k])));
   mount(h('div', { class: 'screen' }, h('div', { class: 'pwrap' },
     h('div', { class: 'ptop' }, h('span', { class: 'pill' }, `Soru ${cur.n} / ${cur.total}`), r.wrap),
     showText && cur.text ? h('p', { class: 'ptext-q' }, cur.text) : null,
-    h('div', { class: 'ptiles' }, [0, 1, 2, 3].map(k => h('button', { class: 'ptile t' + k, 'aria-label': 'Şık ' + LETTERS[k], onClick: () => answer(k) },
-      h('span', { class: 'pshape', html: SHAPES[k] }), showText ? h('span', { class: 'ptext' }, cur.opts[k]) : null))))));
+    showText ? null : h('p', { class: 'hintq' }, 'Ekrandaki soruya bak, cevabını seç.'),
+    choices)));
   startTick(() => {
     const st = P.state; if (!st || st.status !== 'question') return;
     const total = cur.time * 1000;
     const rem = st.startedAt ? st.startedAt + total - srvNow() : total;
     r.update(rem, total);
-    if (rem <= 0 && P.answered !== st.qkey) { P.expired = st.qkey; renderPlayer(); }
+    if (rem <= 0 && P.answered !== qidOf(st)) { P.expired = qidOf(st); renderPlayer(); }
   });
 }
 
 async function answer(c) {
   const st = P.state;
-  if (!st || st.status !== 'question' || P.answered === st.qkey) return;
-  const qkey = st.qkey;
-  P.answered = qkey; P.choice = c; renderPlayer();
+  if (!st || st.status !== 'question' || P.answered === qidOf(st)) return;
+  const qkey = st.qkey, qid = qidOf(st);
+  P.answered = qid; P.choice = c; renderPlayer();
   try { await set(ref(db, `games/${P.pin}/answers/${qkey}/${UID}`), { c, t: serverTimestamp() }); }
-  catch (e) { P.failed = qkey; renderPlayer(); }
+  catch (e) { P.failed = qid; renderPlayer(); }
 }
 
 function pReveal() {
@@ -1208,7 +1318,11 @@ function pReveal() {
   if (me.a === -1) box = h('div', { class: 'result none' }, h('h2', {}, 'Cevap vermedin'), h('p', {}, '0 puan'));
   else if (me.ok) box = h('div', { class: 'result good' }, h('h2', {}, 'Doğru!'), h('p', {}, `+${me.l} puan`));
   else box = h('div', { class: 'result bad' }, h('h2', {}, 'Yanlış'), h('p', {}, '0 puan'));
-  mount(h('div', { class: 'screen' }, h('div', { class: 'pwrap' }, box,
+  const opts = P.meta.phoneText && cur.opts ? cur.opts : null;
+  const arow = (label, k) => h('div', { class: 'arow' }, h('div', { class: 'lbl' }, label),
+    h('div', { class: 'ans' }, dot(k, 'md'), h('span', {}, opts ? opts[k] : 'Şık ' + LETTERS[k])));
+  const extra = me.a === -1 ? [arow('Doğru cevap', cur.correct)] : me.ok ? [] : [arow('Senin cevabın', me.a), arow('Doğru cevap', cur.correct)];
+  mount(h('div', { class: 'screen' }, h('div', { class: 'pwrap' }, box, extra,
     h('div', { class: 'stats' }, h('div', { class: 'stat' }, h('b', {}, `${rank}.`), 'Sıran'), h('div', { class: 'stat' }, h('b', {}, String(me.s)), 'Toplam puan')),
     h('p', { class: 'muted center', style: 'min-height:auto;margin-top:22px' }, 'Sıradaki soru bekleniyor…'))));
 }

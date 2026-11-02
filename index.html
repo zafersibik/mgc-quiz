@@ -51,6 +51,12 @@ button,input,textarea,select{font:inherit;color:inherit}
 
 /* ---------- yönetici: soru hazırlama ---------- */
 .editor{max-width:980px;margin:0 auto;padding-bottom:110px}
+.ed-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:4px 0 22px}
+.sec{margin-bottom:38px}
+.sec + .sec{border-top:2px solid var(--line);padding-top:28px}
+.sec-h{font-size:1.7rem;font-weight:700;letter-spacing:-.02em;margin:0 0 4px}
+.sec-p{margin-bottom:16px}
+.settings .card{background:#E6F4F2;border-color:#A9D8D3}
 .ed-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;padding:10px 0 20px;flex-wrap:wrap}
 .ed-head h1{font-size:2rem;font-weight:700;letter-spacing:-.02em}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
@@ -484,8 +490,6 @@ function renderEditor(keepScroll = true) {
     opts.map(([v, l]) => h('option', { value: String(v), selected: String(v) === String(cur) }, l)));
   const autoSecSel = sel([[5, '5 saniye'], [10, '10 saniye'], [15, '15 saniye'], [20, '20 saniye'], [30, '30 saniye']], D.meta.autoSec, (v) => { D.meta.autoSec = Number(v); });
   const finalSecSel = sel([[5, '5 saniye'], [10, '10 saniye'], [15, '15 saniye']], D.meta.finalSec, (v) => { D.meta.finalSec = Number(v); });
-  autoSecSel.disabled = !D.meta.autoNext;
-  finalSecSel.disabled = !D.meta.finalAuto;
   const fld = (label, node) => h('div', { class: 'field' }, h('label', { class: 'lbl' }, label), node);
 
   const settings = h('div', { class: 'settings' },
@@ -507,10 +511,10 @@ function renderEditor(keepScroll = true) {
     h('div', { class: 'card group' }, h('h3', {}, 'Oyun akışı'),
       h('div', { class: 'grid3' },
         fld('Hazırlık geri sayımı (3, 2, 1, Başla)', sel([[0, 'Kapalı'], [3, '3 saniye'], [5, '5 saniye']], D.meta.prep, (v) => { D.meta.prep = Number(v); })),
-        fld('Soru geçişi', sel([['manual', 'Düğmeyle'], ['auto', 'Otomatik']], D.meta.autoNext ? 'auto' : 'manual', (v) => { D.meta.autoNext = v === 'auto'; autoSecSel.disabled = !D.meta.autoNext; })),
-        fld('Otomatik geçişte cevap ekranı süresi', autoSecSel),
-        fld('Son sorudan sonra sonuçların açılması', sel([['manual', 'Düğmeyle'], ['auto', 'Otomatik']], D.meta.finalAuto ? 'auto' : 'manual', (v) => { D.meta.finalAuto = v === 'auto'; finalSecSel.disabled = !D.meta.finalAuto; })),
-        fld('"Cevaplar değerlendiriliyor" ekranı süresi', finalSecSel)),
+        fld('Soru geçişi', sel([['manual', 'Düğmeyle'], ['auto', 'Otomatik']], D.meta.autoNext ? 'auto' : 'manual', (v) => { D.meta.autoNext = v === 'auto'; })),
+        fld('Cevap ekranı süresi (yalnızca Otomatik modda kullanılır)', autoSecSel),
+        fld('Son sorudan sonra sonuçların açılması', sel([['manual', 'Düğmeyle'], ['auto', 'Otomatik']], D.meta.finalAuto ? 'auto' : 'manual', (v) => { D.meta.finalAuto = v === 'auto'; })),
+        fld('"Cevaplar değerlendiriliyor" süresi (yalnızca Otomatik modda kullanılır)', finalSecSel)),
       h('p', { class: 'hint' }, 'Otomatik modda oyun sırasında "Duraklat" düğmesiyle akışı durdurabilirsin. Podyum üçüncü, ikinci, birinci sırasıyla açılır.')),
     h('div', { class: 'card group' }, h('h3', {}, 'Ses'),
       h('div', { class: 'checks', style: 'margin-top:0' },
@@ -533,11 +537,18 @@ function renderEditor(keepScroll = true) {
       h('button', { class: 'btn ghost', onClick: async () => { if (!confirm('Bu oyun ve tüm cevapları silinsin mi?')) return; try { await remove(ref(db, `games/${RESUME}`)); } catch (e) {} localStorage.removeItem('mgcPin'); RESUME = null; renderEditor(); } }, 'Bu oyunu sil'))) : null;
 
   const root = h('div', { class: 'screen' }, h('div', { class: 'editor' },
-    h('div', { class: 'ed-head' }, h('div', {}, brand(), h('h1', {}, 'Soru hazırlama')),
-      h('p', { class: 'muted' }, 'Taslak bu tarayıcıda otomatik kaydedilir.')),
-    banner, settings, toolbar,
-    D.qs.map((q, i) => qCard(q, i)),
-    h('button', { class: 'btn ghost', onClick: () => { D.qs.push(newQ()); save(); renderEditor(false); window.scrollTo(0, document.body.scrollHeight); } }, '+ Soru ekle')),
+    h('div', { class: 'ed-top' }, brand(), h('span', { class: 'muted' }, 'Yönetici paneli · Taslak bu tarayıcıda otomatik kaydedilir')),
+    banner,
+    h('section', { class: 'sec' },
+      h('h2', { class: 'sec-h' }, 'Oyun ayarları'),
+      h('p', { class: 'sec-p muted' }, 'Süre, puan, geçişler ve ses burada belirlenir.'),
+      settings),
+    h('section', { class: 'sec' },
+      h('h2', { class: 'sec-h' }, 'Soru hazırlama'),
+      h('p', { class: 'sec-p muted' }, 'Soruları elle yaz, Excel\'den yükle ya da metinden ekle.'),
+      toolbar,
+      D.qs.map((q, i) => qCard(q, i)),
+      h('button', { class: 'btn ghost', onClick: () => { D.qs.push(newQ()); save(); renderEditor(false); window.scrollTo(0, document.body.scrollHeight); } }, '+ Soru ekle'))),
     h('div', { class: 'bottombar' }, h('div', { class: 'inner' }, info,
       h('button', { id: 'startBtn', class: 'btn primary big', onClick: startGame }, 'Oyunu başlat'))));
   mount(root);

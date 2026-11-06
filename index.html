@@ -103,11 +103,17 @@ textarea.in{resize:vertical;min-height:64px}
 .qrbox{background:#fff;border-radius:18px;padding:18px;width:max-content}
 .qrbox img,.qrbox canvas{display:block}
 .pin{font-size:clamp(3rem,8vw,6rem);font-weight:800;letter-spacing:.08em;line-height:1;font-variant-numeric:tabular-nums}
-.joinurl{font-size:1.15rem;word-break:break-all;color:#9FB4C9;margin:10px 0 24px}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 24px;max-height:36vh;overflow:auto}
-.chip{background:var(--ink2);border:1px solid var(--ink3);border-radius:999px;padding:.35em .9em;font-weight:600;display:flex;gap:8px;align-items:center}
-.chip button{background:none;border:0;color:#9FB4C9;cursor:pointer;font-size:1rem;padding:0 2px}
-.chip button:hover{color:#fff}
+.joinurl{font-size:clamp(1.2rem,2.2vw,1.8rem);font-weight:600;word-break:break-all;color:#C7D6E5;margin:10px 0 18px}
+.how{font-size:1.15rem;margin:18px 0 4px}
+.plist{max-width:1180px;margin:30px auto 0;border-top:1px solid var(--ink3);padding-top:22px}
+.pcount{font-size:clamp(1.6rem,3vw,2.6rem);font-weight:700;margin-bottom:14px;letter-spacing:-.01em}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(130px,13vw,190px),1fr));gap:10px}
+.pgrid.compact{grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
+.pcard{background:var(--ink2);border:1px solid var(--ink3);border-radius:12px;padding:.6em .8em;font-weight:600;display:flex;gap:8px;align-items:center;justify-content:space-between;min-width:0}
+.pcard span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pcard button{background:none;border:0;color:#9FB4C9;cursor:pointer;font-size:1rem;padding:0 2px}
+.pcard button:hover{color:#fff}
+.pgrid.compact .pcard{padding:.4em .6em;font-size:.92rem}
 .topline{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:10px}
 .pill{background:var(--ink2);border-radius:999px;padding:.4em 1em;font-weight:600}
 .qtext{font-size:clamp(1.7rem,4.2vw,3.6rem);font-weight:700;line-height:1.15;letter-spacing:-.015em;max-width:1400px;margin:14px auto 18px;text-align:center}
@@ -183,6 +189,14 @@ textarea.in{resize:vertical;min-height:64px}
 .stat{background:var(--ink2);border-radius:14px;padding:14px 20px;text-align:center;min-width:130px}
 .stat b{display:block;font-size:1.8rem}
 
+/* telefon alt bilgi */
+.pfoot{margin-top:18px;text-align:center}
+.pmeta{color:#9FB4C9;font-size:.95rem;margin-bottom:8px}
+.pmeta .ok{color:var(--ok)}
+.pmeta .bad{color:var(--bad)}
+.perr{color:#FFB4AB;font-size:.9rem;min-height:1.2em;margin-bottom:6px;word-break:break-word}
+.pfoot .btn{padding:.5em .9em;font-size:.95rem}
+
 /* cevap durumu, kayıtlı sınavlar */
 .statusrow{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:1400px;margin:16px auto 0}
 .nchip{background:var(--ink2);color:#9FB4C9;border:1px solid var(--ink3);border-radius:999px;padding:.2em .85em;font-size:.95rem;font-weight:600}
@@ -234,7 +248,7 @@ textarea.in{resize:vertical;min-height:64px}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
-import { getDatabase, ref, set, get, update, remove, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-database.js";
+import { getDatabase, ref, set, get, update, remove, onValue, serverTimestamp, goOnline } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBKArN-WKayW6mqg3VotyhDkEOrgApO8e0",
@@ -832,31 +846,46 @@ function renderHost(force) {
 function playerList() { return Object.entries(H.players).map(([uid, v]) => ({ uid, name: v.name })).sort((a, b) => a.name.localeCompare(b.name, 'tr')); }
 function answeredCount(i) { const a = H.answers['q' + i] || {}; return Object.keys(a).filter(u => H.players[u]).length; }
 
+async function copyText(t) {
+  try { await navigator.clipboard.writeText(t); return true; } catch (e) {}
+  try {
+    const ta = h('textarea', { style: 'position:fixed;opacity:0' }); ta.value = t;
+    document.body.appendChild(ta); ta.select();
+    const ok = document.execCommand('copy'); ta.remove(); return !!ok;
+  } catch (e) { return false; }
+}
+
 function hostLobby() {
   const url = joinBase() + '?kod=' + H.pin;
   const qr = h('div', { class: 'qrbox' });
   if (window.QRCode) { new QRCode(qr, { text: url, width: 300, height: 300, colorDark: '#0B1F33', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M }); }
   else qr.append(h('p', { style: 'color:#0B1F33;max-width:300px' }, 'QR kod oluşturulamadı. Bağlantıyı elle paylaş.'));
-  mount(h('div', { class: 'screen' }, h('div', { class: 'lobby' },
-    qr,
-    h('div', {},
-      brand(),
-      h('h1', { style: 'font-size:clamp(1.4rem,3vw,2.2rem);margin:14px 0 6px' }, H.meta.title),
-      h('p', { class: 'muted' }, 'Telefonunun kamerasıyla QR kodu okut veya adrese gir, oyun kodunu yaz.'),
-      h('p', { class: 'joinurl' }, joinBase()),
-      h('div', { class: 'pin', 'aria-label': 'Oyun kodu' }, H.pin),
-      h('h2', { id: 'pcount', style: 'margin-top:26px;font-size:1.3rem' }),
-      h('div', { id: 'chips', class: 'chips' }),
-      h('div', { class: 'row' },
-        h('button', { id: 'startQ', class: 'btn primary big', onClick: () => openQuestion(0) }, 'Oyunu başlat'),
-        h('button', { class: 'btn ghost', onClick: leaveGame }, 'Vazgeç ve çık'))))));
+  const copyLink = async () => { toast((await copyText(url)) ? 'Bağlantı kopyalandı.' : 'Kopyalanamadı. Bağlantı: ' + url); };
+  mount(h('div', { class: 'screen' },
+    h('div', { class: 'lobby' },
+      qr,
+      h('div', {},
+        brand(),
+        h('h1', { style: 'font-size:clamp(1.4rem,3vw,2.2rem);margin:14px 0 6px' }, H.meta.title),
+        h('h2', { class: 'how' }, 'Nasıl katılırım?'),
+        h('p', { class: 'muted' }, 'QR kodu telefonunun kamerasıyla okut ya da adrese gir ve oyun kodunu yaz.'),
+        h('p', { class: 'joinurl' }, joinBase()),
+        h('div', { class: 'pin', 'aria-label': 'Oyun kodu' }, H.pin),
+        h('div', { class: 'row', style: 'margin-top:22px' },
+          h('button', { id: 'startQ', class: 'btn primary big', onClick: () => openQuestion(0) }, 'Oyunu başlat'),
+          h('button', { class: 'btn ghost', onClick: copyLink }, 'Bağlantıyı kopyala'),
+          h('button', { class: 'btn ghost', onClick: leaveGame }, 'Vazgeç ve çık')))),
+    h('div', { class: 'plist' },
+      h('h2', { id: 'pcount', class: 'pcount' }),
+      h('div', { id: 'chips', class: 'pgrid' }))));
   updateLobby();
 }
 function updateLobby() {
   const chips = $id('chips'); if (!chips) return;
   const list = playerList();
   $id('pcount').textContent = list.length ? `${list.length} katılımcı` : 'Katılımcılar bekleniyor…';
-  chips.replaceChildren(...list.map(p => h('span', { class: 'chip' }, p.name,
+  chips.className = 'pgrid' + (list.length > 40 ? ' compact' : '');
+  chips.replaceChildren(...list.map(p => h('div', { class: 'pcard' }, h('span', {}, p.name),
     h('button', { title: 'Çıkar', 'aria-label': p.name + ' adlı katılımcıyı çıkar', onClick: () => remove(ref(db, `games/${H.pin}/players/${p.uid}`)).catch(() => toast('Katılımcı çıkarılamadı.')) }, '✕'))));
   $id('startQ').disabled = list.length === 0;
 }
@@ -1179,7 +1208,11 @@ async function playerBoot() {
   if (saved && saved.pin && (!PIN_PARAM || PIN_PARAM === saved.pin)) {
     try {
       const [hs, me] = await Promise.all([get(ref(db, `games/${saved.pin}/hostUid`)), get(ref(db, `games/${saved.pin}/players/${UID}`))]);
-      if (hs.exists() && me.exists()) { attachPlayer(saved.pin, me.val().name); return; }
+      if (hs.exists() && me.exists()) {
+        let stale = false;
+        if (!PIN_PARAM) { const st0 = (await get(ref(db, `games/${saved.pin}/state`))).val(); stale = !st0 || st0.status === 'final'; }
+        if (!stale) { attachPlayer(saved.pin, me.val().name); return; }
+      }
     } catch (e) {}
     localStorage.removeItem('mgcPlayer');
   }
@@ -1214,7 +1247,7 @@ function renderJoin(msg) {
       }
       attachPlayer(pin, name);
     } catch (e) {
-      err.textContent = 'Katılamadın. İnternet bağlantını kontrol edip tekrar dene.'; btn.disabled = false;
+      err.textContent = 'Katılamadın. İnternet bağlantını kontrol edip tekrar dene. (' + ((e && (e.code || e.message)) || 'bilinmeyen hata') + ')'; btn.disabled = false;
     }
   }
   [pinIn, nameIn].forEach(i => i.addEventListener('keydown', (e) => { if (e.key === 'Enter') join(); }));
@@ -1225,7 +1258,7 @@ function renderJoin(msg) {
 async function attachPlayer(pin, name) {
   detachAll();
   localStorage.setItem('mgcPlayer', JSON.stringify({ pin, name }));
-  P = { pin, name, meta: null, state: null, cur: null, board: null, answered: null, choice: -1, expired: null, failed: null, key: '' };
+  P = { pin, name, meta: null, state: null, cur: null, board: null, answered: null, choice: -1, expired: null, failed: null, key: '', connected: true, err: null };
   mount(h('div', { class: 'screen' }, h('div', { class: 'center muted' }, 'Bağlanıyor…')));
   try {
     const s0 = (await get(ref(db, `games/${pin}/state`))).val();
@@ -1234,7 +1267,13 @@ async function attachPlayer(pin, name) {
       if (a.exists()) { P.answered = qidOf(s0); P.choice = a.val().c; }
     }
   } catch (e) {}
-  const p = (path, fn) => UNS.push(onValue(ref(db, `games/${pin}/${path}`), fn));
+  const onErr = (e) => { P.err = (e && (e.code || e.message)) || 'hata'; setConn(); };
+  const p = (path, fn) => UNS.push(onValue(ref(db, `games/${pin}/${path}`), fn, onErr));
+  UNS.push(onValue(ref(db, '.info/connected'), s => {
+    const c = s.val() === true, was = P.connected;
+    P.connected = c; setConn();
+    if (c && was === false) resync();
+  }));
   p('meta', s => { P.meta = s.val(); renderPlayer(); });
   p('current', s => { P.cur = s.val(); renderPlayer(); });
   p('board', s => { P.board = s.val(); renderPlayer(); });
@@ -1243,6 +1282,55 @@ async function attachPlayer(pin, name) {
 }
 
 const qidOf = (st) => (st.round || 0) + ':' + st.qkey;
+
+function setConn() {
+  if (!P) return;
+  const l = $id('connLbl'); if (l) { l.textContent = P.connected === false ? 'Bağlantı kesildi' : 'Bağlı'; l.className = P.connected === false ? 'bad' : 'ok'; }
+  const e = $id('connErr'); if (e) e.textContent = P.err ? 'Hata: ' + P.err : '';
+}
+
+async function resync() {
+  if (!P) return;
+  const pin = P.pin;
+  try {
+    const base = `games/${pin}`;
+    const [m, st, cu, bo] = await Promise.all([get(ref(db, base + '/meta')), get(ref(db, base + '/state')), get(ref(db, base + '/current')), get(ref(db, base + '/board'))]);
+    if (!P || P.pin !== pin) return;
+    if (!st.exists()) { localStorage.removeItem('mgcPlayer'); detachAll(); P = null; renderJoin('Bu oyun artık yok. Yeni bir oyun koduyla katılabilirsin.'); return; }
+    const changed = JSON.stringify(P.state) !== JSON.stringify(st.val());
+    P.meta = m.val(); P.cur = cu.val(); P.board = bo.val(); P.state = st.val();
+    if (P.state.status === 'question' && P.answered !== qidOf(P.state)) {
+      const a = await get(ref(db, `${base}/answers/${P.state.qkey}/${UID}`));
+      if (a.exists()) { P.answered = qidOf(P.state); P.choice = a.val().c; }
+    }
+    P.err = null; setConn();
+    if (changed) P.key = '';
+    renderPlayer();
+  } catch (e) { P.err = e.code || e.message || 'hata'; setConn(); }
+}
+
+function reconnect() { try { goOnline(db); } catch (e) {} toast('Yeniden bağlanılıyor…'); resync(); }
+
+async function leavePlayer() {
+  if (!confirm('Oyundan ayrılmak istiyor musun?')) return;
+  const pin = P && P.pin;
+  detachAll(); localStorage.removeItem('mgcPlayer'); P = null;
+  try { if (pin) await remove(ref(db, `games/${pin}/players/${UID}`)); } catch (e) {}
+  renderJoin('');
+}
+
+function pFoot() {
+  const bad = P.connected === false;
+  return h('div', { class: 'pfoot' },
+    h('p', { class: 'pmeta' }, `Oyun kodu ${P.pin} · `, h('span', { id: 'connLbl', class: bad ? 'bad' : 'ok' }, bad ? 'Bağlantı kesildi' : 'Bağlı')),
+    h('p', { id: 'connErr', class: 'perr' }, P.err ? 'Hata: ' + P.err : ''),
+    h('div', { class: 'row', style: 'justify-content:center' },
+      h('button', { class: 'btn ghost', onClick: reconnect }, 'Yeniden bağlan'),
+      h('button', { class: 'btn ghost', onClick: leavePlayer }, 'Oyundan ayrıl')));
+}
+
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && P) { try { goOnline(db); } catch (e) {} resync(); } });
+window.addEventListener('online', () => { if (P) { try { goOnline(db); } catch (e) {} resync(); } });
 
 function renderPlayer() {
   if (!P) return;
@@ -1263,7 +1351,7 @@ function renderPlayer() {
 }
 
 function pWait(title, sub, extra) {
-  mount(h('div', { class: 'screen' }, h('div', { class: 'pwrap' }, h('div', { class: 'center' }, extra || null, h('h2', {}, title), sub ? h('p', { class: 'muted' }, sub) : null))));
+  mount(h('div', { class: 'screen' }, h('div', { class: 'pwrap' }, h('div', { class: 'center', style: 'min-height:52vh' }, extra || null, h('h2', {}, title), sub ? h('p', { class: 'muted' }, sub) : null), pFoot())));
 }
 
 function pPrep() {
@@ -1334,7 +1422,7 @@ function pReveal() {
   const extra = me.a === -1 ? [arow('Doğru cevap', cur.correct, 'ok')] : me.ok ? [] : [arow('Senin cevabın', me.a, 'bad'), arow('Doğru cevap', cur.correct, 'ok')];
   mount(h('div', { class: 'screen' }, h('div', { class: 'pwrap' }, box, extra,
     h('div', { class: 'stats' }, h('div', { class: 'stat' }, h('b', {}, `${rank}.`), 'Sıran'), h('div', { class: 'stat' }, h('b', {}, String(me.s)), 'Toplam puan')),
-    h('p', { class: 'muted center', style: 'min-height:auto;margin-top:22px' }, 'Sıradaki soru bekleniyor…'))));
+    h('p', { class: 'muted center', style: 'min-height:auto;margin-top:22px' }, 'Sıradaki soru bekleniyor…'), pFoot())));
 }
 
 function pFinal() {
@@ -1346,7 +1434,7 @@ function pFinal() {
     h('div', { class: 'center', style: 'min-height:auto;padding:24px 0' }, h('h2', {}, 'Oyun bitti'),
       me ? h('div', { class: 'stats' }, h('div', { class: 'stat' }, h('b', {}, `${rank}.`), 'Sıran'), h('div', { class: 'stat' }, h('b', {}, String(me.s)), 'Toplam puan')) : null),
     h('div', { class: 'board' }, h('h2', {}, 'İlk 3'), boardRows(sorted, 3, false)),
-    h('div', { class: 'actions' }, h('button', { class: 'btn ghost', onClick: () => { localStorage.removeItem('mgcPlayer'); detachAll(); P = null; renderJoin(''); } }, 'Yeni oyuna katıl')))));
+    h('div', { class: 'actions' }, h('button', { class: 'btn ghost', onClick: () => { localStorage.removeItem('mgcPlayer'); detachAll(); P = null; renderJoin(''); } }, 'Yeni oyuna katıl')), pFoot())));
 }
 
 boot();
